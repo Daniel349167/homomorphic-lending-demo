@@ -1,38 +1,70 @@
-# Aplicación P2P con Encriptación Homomórfica
+# Homomorphic Lending Demo
 
-## Requisitos
+Simulacion educativa de prestamos P2P que usa cifrado homomorfico para operar
+sobre determinados valores sin revelar el dato original durante el calculo. La
+aplicacion combina Flask, MySQL y TenSEAL.
 
-- Python 3.7.9
-- MySQL (Configuración: `max_allowed_packet=64M`)
+Este es un proyecto de investigacion y portafolio. No es un producto financiero
+ni una implementacion criptografica auditada.
 
-## Instalación
+## Objetivo tecnico
 
-1. **Instalar dependencias**  
-   Instala las dependencias necesarias mediante pip:
-   ```bash
-   pip install -r requirements.txt
-    ```
-   
-2. **Instalar dependencias**  
-   - Descargar y descomprimir tenseal.zip de la siguiente ruta:  
-     [Descargar tenseal.zip](https://1drv.ms/u/c/efa39ad3b9672138/EWpsT6PoEtlIkIJxgQVEVQMBH6ldNmqGjIhs4bAasw1x5w?e=3nhttx)
+- Generar y almacenar solicitudes de prestamo.
+- Cifrar datos numericos con TenSEAL.
+- Ejecutar operaciones admitidas sobre valores cifrados.
+- Conservar historial crediticio y ofertas en MySQL.
+- Separar las claves generadas del codigo fuente.
 
-4. **Crear carpeta de claves**  
-   Crea una carpeta llamada keys.
+## Arquitectura
 
-5. **Crear base de datos**  
-   En tu terminal de MySQL, ejecuta el siguiente comando para crear la base de datos:
-   ```bash
-   CREATE DATABASE p2p;
-   ```
-6. **Ejecutar Migraciones**
-   Ejecuta las siguientes migraciones para configurar la base de datos:
-   ```bash
-   flask db migrate -m "correr migraciones"
-   flask db upgrade
-   ```
-6. **Correr la Aplicación**
-   Ejecuta el siguiente comando para iniciar la aplicación:
-   ```bash
-   flask run
-   ```
+```mermaid
+flowchart LR
+    Browser --> Flask[Flask application]
+    Flask --> HE[TenSEAL context]
+    Flask --> DB[(MySQL)]
+    HE --> Keys[Local keys - ignored by Git]
+```
+
+## Stack
+
+- Python y Flask
+- TenSEAL / Microsoft SEAL
+- SQLAlchemy, Alembic y MySQL
+- Docker Compose y Nginx
+- Pruebas unitarias de operaciones cifradas
+
+## Ejecucion con Docker
+
+```bash
+docker compose up --build
+```
+
+Para ejecucion manual:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+flask db upgrade
+flask run
+```
+
+La carpeta `keys/` se genera localmente. Solo se conserva `.gitkeep`; nunca se
+deben publicar claves reales.
+
+## Pruebas
+
+```bash
+python -m unittest discover -s tests
+```
+
+## Limitaciones de seguridad
+
+- El esquema, los parametros criptograficos y la gestion de claves no han sido
+  auditados.
+- El demo no cubre rotacion de claves, HSM, autenticacion robusta ni proteccion
+  contra canales laterales.
+- Los datos y credenciales de Docker son exclusivamente locales.
+
+Estas limitaciones son deliberadamente visibles para que el repositorio sea una
+demostracion tecnica defendible y no una afirmacion exagerada de seguridad.

@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build application image
+        run: docker compose build flask
+      - name: Run unit tests
+        run: docker compose run --rm --no-deps flask python -m unittest discover -s tests
+      - name: Clean containers
+        if: always()
+        run: docker compose down --volumes

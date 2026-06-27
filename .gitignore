@@ -3,6 +3,8 @@ __pycache__/
 
 # Entornos virtuales
 venv/
+.venv/
+node_modules/
 
 # Configuraciones de editor
 .vscode/
@@ -16,6 +18,7 @@ TenSEAL/
 
 # Archivos de configuración
 *.env
+.env
 
 # Excluir static/keys completamente
 static/keys/
